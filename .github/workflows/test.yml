@@ -4,7 +4,7 @@ jobs:
   benchmark:
     runs-on: windows-latest
     steps:
-      - name: Benchmark without warmup
+      - name: Benchmark
         shell: pwsh
         run: |
           $src = @'
@@ -70,4 +70,4 @@ jobs:
           Write-Output "1st: $($t1.TotalMilliseconds) ms"
           Write-Output "2st: $($t2.TotalMilliseconds) ms"
           Write-Output "3st: $($t3.TotalMilliseconds) ms"
-          Write-Output "Ratio: ${ratio}x slower on cold start"
+          Write-Output "Ratio: ${ratio}x slower"

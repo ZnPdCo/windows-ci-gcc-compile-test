@@ -58,17 +58,17 @@ jobs:
           $exeFile = "$env:TEMP\helloworld.exe"
           Set-Content -Path $srcFile -Value $src
 
-          $t1 = Measure-Command { & g++ -O2 -o $exeFile $srcFile 2>&1 | Out-Null }
+          $t1 = Measure-Command { & g++ -O2 -ftime-report -o $exeFile $srcFile 2>&1 | Out-Null }
           Write-Output "1st: $($t1.TotalMilliseconds) ms"
           Remove-Item $exeFile -Force -ErrorAction SilentlyContinue
 
           Write-Output ""
-          $t2 = Measure-Command { & g++ -O2 -o $exeFile $srcFile 2>&1 | Out-Null }
+          $t2 = Measure-Command { & g++ -O2 -ftime-report -o $exeFile $srcFile 2>&1 | Out-Null }
           Write-Output "2st: $($t2.TotalMilliseconds) ms"
           Remove-Item $exeFile -Force -ErrorAction SilentlyContinue
 
           Write-Output ""
-          $t3 = Measure-Command { & g++ -O2 -o $exeFile $srcFile 2>&1 | Out-Null }
+          $t3 = Measure-Command { & g++ -O2 -ftime-report -o $exeFile $srcFile 2>&1 | Out-Null }
           Write-Output "3st: $($t3.TotalMilliseconds) ms"
           Remove-Item $exeFile -Force -ErrorAction SilentlyContinue
 

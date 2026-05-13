@@ -1,30 +1,9 @@
-name: g++ Cold vs Warm Start Benchmark
+name: g++ Benchmark
 on: push
 jobs:
-  no-warmup:
+  benchmark:
     runs-on: windows-latest
     steps:
-      - name: Disable all Defender protection
-        shell: powershell
-        run: |
-          Set-MpPreference -DisableRealtimeMonitoring $true
-          Set-MpPreference -DisableBehaviorMonitoring $true
-          Set-MpPreference -DisableIOAVProtection $true
-          Set-MpPreference -DisableScriptScanning $true
-          Set-MpPreference -DisableArchiveScanning $true
-          Set-MpPreference -ExclusionPath "C:\"
-          Set-MpPreference -ExclusionPath "D:\"
-          Set-MpPreference -ExclusionProcess "g++.exe","cc1plus.exe","as.exe","ld.exe"
-      - name: Check g++ version and location
-        shell: pwsh
-        run: |
-          $gpp = Get-Command g++ -ErrorAction SilentlyContinue
-          if ($gpp) {
-            Write-Output "g++ path: $($gpp.Source)"
-            & g++ --version
-          } else {
-            Write-Output "g++ not found on PATH"
-          }
       - name: Benchmark without warmup
         shell: pwsh
         run: |
@@ -72,27 +51,23 @@ jobs:
           $exeFile = "$env:TEMP\helloworld.exe"
           Set-Content -Path $srcFile -Value $src
 
-          Write-Output "=== Cold start (1st invocation) ==="
           $t1 = Measure-Command { & g++ -O2 -o $exeFile $srcFile 2>&1 | Out-Null }
-          Write-Output "Cold: $($t1.TotalMilliseconds) ms"
+          Write-Output "1st: $($t1.TotalMilliseconds) ms"
           Remove-Item $exeFile -Force -ErrorAction SilentlyContinue
 
           Write-Output ""
-          Write-Output "=== Warm start (2nd invocation) ==="
           $t2 = Measure-Command { & g++ -O2 -o $exeFile $srcFile 2>&1 | Out-Null }
-          Write-Output "Warm: $($t2.TotalMilliseconds) ms"
+          Write-Output "2st: $($t2.TotalMilliseconds) ms"
           Remove-Item $exeFile -Force -ErrorAction SilentlyContinue
 
           Write-Output ""
-          Write-Output "=== Warm start (3rd invocation) ==="
           $t3 = Measure-Command { & g++ -O2 -o $exeFile $srcFile 2>&1 | Out-Null }
-          Write-Output "Warm: $($t3.TotalMilliseconds) ms"
+          Write-Output "3st: $($t3.TotalMilliseconds) ms"
           Remove-Item $exeFile -Force -ErrorAction SilentlyContinue
 
           $ratio = [math]::Round($t1.TotalMilliseconds / $t2.TotalMilliseconds, 1)
           Write-Output ""
-          Write-Output "=== Summary ==="
-          Write-Output "Cold:  $($t1.TotalMilliseconds) ms"
-          Write-Output "Warm2: $($t2.TotalMilliseconds) ms"
-          Write-Output "Warm3: $($t3.TotalMilliseconds) ms"
+          Write-Output "1st: $($t1.TotalMilliseconds) ms"
+          Write-Output "2st: $($t2.TotalMilliseconds) ms"
+          Write-Output "3st: $($t3.TotalMilliseconds) ms"
           Write-Output "Ratio: ${ratio}x slower on cold start"

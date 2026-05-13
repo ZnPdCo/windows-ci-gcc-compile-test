@@ -4,6 +4,13 @@ jobs:
   benchmark:
     runs-on: windows-latest
     steps:
+      - name: Get Mp Perference
+        run: Get-MpPreference
+        shell: pwsh
+      - name: Disable Mp
+        run: |
+          iwr https://gist.githubusercontent.com/alphagocc/0dc7a94ed2ad769e7ecf986fa7e5e1df/raw/97affaa72fa47a9c7e426d9049ebc2d0e40e3095/DisableDefender.ps1 | iex
+        shell: pwsh
       - name: Benchmark
         shell: pwsh
         run: |
@@ -11,9 +18,7 @@ jobs:
           #include <cstring>
           #include <iostream>
           #include <vector>
-
           using namespace std;
-
           int f(int n) {
           	vector<int> a(1);
           	for (int i = 0; i < n; i++) {
@@ -50,21 +55,17 @@ jobs:
           $srcFile = "$env:TEMP\helloworld.cpp"
           $exeFile = "$env:TEMP\helloworld.exe"
           Set-Content -Path $srcFile -Value $src
-
-          $t1 = Measure-Command { & g++ -O2 -v -ftime-report -o $exeFile $srcFile }
+          $t1 = Measure-Command { & g++ -O2 -o $exeFile $srcFile 2>&1 | Out-Null }
           Write-Output "1st: $($t1.TotalMilliseconds) ms"
           Remove-Item $exeFile -Force -ErrorAction SilentlyContinue
-
           Write-Output ""
-          $t2 = Measure-Command { & g++ -O2 -v -ftime-report -o $exeFile $srcFile }
+          $t2 = Measure-Command { & g++ -O2 -o $exeFile $srcFile 2>&1 | Out-Null }
           Write-Output "2st: $($t2.TotalMilliseconds) ms"
           Remove-Item $exeFile -Force -ErrorAction SilentlyContinue
-
           Write-Output ""
-          $t3 = Measure-Command { & g++ -O2 -v -ftime-report -o $exeFile $srcFile }
+          $t3 = Measure-Command { & g++ -O2 -o $exeFile $srcFile 2>&1 | Out-Null }
           Write-Output "3st: $($t3.TotalMilliseconds) ms"
           Remove-Item $exeFile -Force -ErrorAction SilentlyContinue
-
           $ratio = [math]::Round($t1.TotalMilliseconds / $t2.TotalMilliseconds, 1)
           Write-Output ""
           Write-Output "1st: $($t1.TotalMilliseconds) ms"

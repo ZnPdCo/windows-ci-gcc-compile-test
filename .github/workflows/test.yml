@@ -2,7 +2,7 @@ name: g++ Benchmark
 on: push
 jobs:
   benchmark:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     steps:
       - name: Benchmark
         shell: pwsh

@@ -2,7 +2,7 @@ name: g++ Benchmark
 on: push
 jobs:
   benchmark:
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - name: Get Mp Perference
         run: Get-MpPreference
